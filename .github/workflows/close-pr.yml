@@ -1,0 +1,20 @@
+name: Close Pull Request
+
+on:
+  pull_request_target:
+    types: [opened]
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure user
+        run: |
+          git config --global user.email "github@teamrembrandts.com"
+          git config --global user.name "Team-Rembrandts-bot"
+      - name: Close pull request
+        uses: superbrothers/close-pull-request@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.BOT_ACCESS_TOKEN }}
+        with:
+          comment: "Thank you for your contribution. This repository serves as a mirror of our private repository, and is not intended for public contributions. If you have any questions, please contact us through our build thread on the [Chief Delphi](https://www.chiefdelphi.com/t/frc-4481-team-rembrandts-2025-build-thread-open-alliance/472303?u=nigelientje) forums."

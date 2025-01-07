@@ -1,0 +1,64 @@
+name: Publish Public Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout private robot repository
+        uses: actions/checkout@v4
+        with:
+          repository: FRC-4481-Team-Rembrandts/2025-robot
+          path: code-private-robot
+      - name: Checkout private library repository
+        uses: actions/checkout@v4
+        with:
+          repository: FRC-4481-Team-Rembrandts/robot-library
+          path: code-private-lib
+          token: ${{ secrets.BOT_ACCESS_TOKEN }}
+      - name: Checkout public repository
+        uses: actions/checkout@v4
+        with:
+          repository: FRC-4481-Team-Rembrandts/2025-robot-public
+          path: code-public
+          token: ${{ secrets.BOT_ACCESS_TOKEN }}
+      - name: Copy lib files to robot
+        run: |
+          rm code-private-lib/README.md
+          rm code-private-lib/LICENSE
+          rm code-private-lib/gradlew
+          rm code-private-lib/gradlew.bat
+          rm -r code-private-lib/gradle
+          rm code-private-lib/settings.gradle
+          rsync -av --delete code-private-lib/ code-private-robot/lib --exclude .git --exclude .gitignore
+      - name: Copy private files to public
+        run: |
+          rm code-private-robot/README.md
+          mv code-private-robot/README-public.md code-private-robot/README.md
+          rm code-private-robot/banner.png
+          mv code-private-robot/banner-public.png code-private-robot/banner.png
+          mv code-private-robot/.github/workflows code-private-robot/.github/workflows_private
+          mv code-private-robot/.github/workflows_public code-private-robot/.github/workflows
+          rsync -av --delete code-private-robot/ code-public --exclude .git --exclude .gitmodules
+      - name: Import GPG key
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+          gpg_private_key: ${{ secrets.BOT_GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.BOT_GPG_PASSPHRASE }}
+          git_user_signingkey: true
+          git_commit_gpgsign: true
+          workdir: './code-public'
+      - name: Create public commit
+        working-directory: code-public
+        run: |
+          git add -A
+          git diff-index --quiet HEAD || git commit -m "Sprint week $(TZ="CET" date -d 'last monday' +'%V')"
+      - name: Push public commit
+        working-directory: code-public
+        env:
+          GITHUB_TOKEN: ${{ secrets.BOT_ACCESS_TOKEN }}
+        run: |
+          git config --unset-all http.https://github.com/.extraheader
+          git push --set-upstream https://Team-Rembrandts-bot:$GITHUB_TOKEN@github.com/FRC-4481-Team-Rembrandts/2025-robot-public main
