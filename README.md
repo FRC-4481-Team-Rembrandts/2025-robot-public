@@ -14,7 +14,8 @@ This repository contains Team Rembrandts' robot code for the 2025 _FIRST_ Roboti
 This repository mirrors the private repositories in which Team Rembrandts develops their robot code.
 Mirroring is done automatically.
 
-> [!TIP] Want to know more about our robot, or receive updates even earlier? 
+> [!TIP]
+> Want to know more about our robot, or receive updates even earlier? 
 > Check out our [build thread on ChiefDelphi](https://www.chiefdelphi.com/t/frc-4481-team-rembrandts-2025-build-thread-open-alliance/472303?u=nigelientje).
 
 <div align="center">
