@@ -2,14 +2,13 @@ name: CI Pipeline
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
   pull_request:
-    branches:
-      - main
+    branches: [ "main" ]
 
 jobs:
   formatting:
+    name: Formatting Check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25,9 +24,10 @@ jobs:
       - name: Run Spotless check
         run: ./gradlew robot:spotlessCheck
 
-  linting:
+  compile:
+    name: Compile
     runs-on: ubuntu-latest
-    container: wpilib/roborio-cross-ubuntu:2024-22.04
+    container: wpilib/roborio-cross-ubuntu:2025-22.04
     steps:
       - uses: actions/checkout@v4
         with:
@@ -37,21 +37,65 @@ jobs:
         run: git config --global --add safe.directory $GITHUB_WORKSPACE
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-      - name: Check Javadoc
-        run: ./gradlew checkstyleMain checkstyleTest
+      - name: Cache Gradle build and dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            build
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*') }}
+      - name: Compile classes
+        run: ./gradlew classes
+
+  linting:
+    name: Linting Check
+    runs-on: ubuntu-latest
+    container: wpilib/roborio-cross-ubuntu:2025-22.04
+    needs: compile
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          token: ${{ secrets.BOT_ACCESS_TOKEN }}
+      - name: Add repository to git safe directories
+        run: git config --global --add safe.directory $GITHUB_WORKSPACE
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      - name: Cache Gradle build and dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            build
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*') }}
+      - name: Run linter
+        run: ./gradlew checkstyleMain
 
   build:
+    name: Build
     runs-on: ubuntu-latest
-    needs: [formatting, linting]
-    container: wpilib/roborio-cross-ubuntu:2024-22.04
+    container: wpilib/roborio-cross-ubuntu:2025-22.04
+    needs:
+      - linting
+      - formatting
     steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: true 
-        token: ${{ secrets.BOT_ACCESS_TOKEN }}
-    - name: Add repository to git safe directories
-      run: git config --global --add safe.directory $GITHUB_WORKSPACE
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-    - name: Compile and run tests on robot code
-      run: ./gradlew build -x checkstyleMain -x checkstyleTest -x spotlessCheck
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          token: ${{ secrets.BOT_ACCESS_TOKEN }}
+      - name: Add repository to git safe directories
+        run: git config --global --add safe.directory $GITHUB_WORKSPACE
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      - name: Cache Gradle build and dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            build
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*') }}
+      - name: Run full build
+        run: ./gradlew build -x spotlessCheck -x checkstyleMain -x checkstyleTest -x test -x lib:check -x lib:test

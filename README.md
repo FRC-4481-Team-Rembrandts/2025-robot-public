@@ -1,18 +1,21 @@
 ![reefscape banner](/banner.png)
 
-# 2025 Robot (public)
+# 2025 Robot (Public)
 [![CI Pipeline](https://github.com/FRC-4481-Team-Rembrandts/2025-robot-public/actions/workflows/build.yml/badge.svg)](https://github.com/FRC-4481-Team-Rembrandts/2025-robot-public/actions/workflows/build.yml)
-![GitHub License](https://img.shields.io/github/license/FRC-4481-Team-Rembrandts/2025-robot-public)
+[![GitHub License](https://img.shields.io/github/license/FRC-4481-Team-Rembrandts/2025-robot-public)](https://github.com/FRC-4481-Team-Rembrandts/2025-robot-public/blob/main/LICENSE)
 ![GitHub last commit](https://img.shields.io/github/last-commit/FRC-4481-Team-Rembrandts/2025-robot-public)
 [![Javadoc](https://img.shields.io/badge/Build_Thread-ChiefDelphi-orange)](https://www.chiefdelphi.com/t/frc-4481-team-rembrandts-2025-build-thread-open-alliance/472303?u=nigelientje)
 
 This repository contains Team Rembrandts' robot code for the 2025 _FIRST_ Robotics Competition REEFSCAPE season.
 
+![2025 Robot: Delta](/robot.png)
+
 ## Updates
 This repository mirrors the private repositories in which Team Rembrandts develops their robot code.
+Mirroring is done automatically.
 
-Want to know more about our robot, or receive updates even earlier? 
-Check out our [build thread on ChiefDelphi](https://www.chiefdelphi.com/t/frc-4481-team-rembrandts-2025-build-thread-open-alliance/472303?u=nigelientje).
+> [!TIP] Want to know more about our robot, or receive updates even earlier? 
+> Check out our [build thread on ChiefDelphi](https://www.chiefdelphi.com/t/frc-4481-team-rembrandts-2025-build-thread-open-alliance/472303?u=nigelientje).
 
 <div align="center">
 
