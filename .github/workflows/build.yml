@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     container: wpilib/roborio-cross-ubuntu:2024-22.04
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
       with:
         submodules: true 
         token: ${{ secrets.BOT_ACCESS_TOKEN }}
